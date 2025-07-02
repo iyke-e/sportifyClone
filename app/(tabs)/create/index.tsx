@@ -24,9 +24,9 @@ const CreatePlaylistScreen = () => {
         }
 
         try {
-            const playlist = await createPlaylistForUser(name.trim()); // should return { id, ... }
+            const playlist = await createPlaylistForUser(name.trim());
             router.replace({
-                pathname: '/(tabs)/library/playlistcreated',
+                pathname: '/(tabs)/library/playlistdetails',
                 params: { playlistId: playlist.id },
             });
         } catch (error) {
