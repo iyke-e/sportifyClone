@@ -25,11 +25,6 @@ import CirclePlus from "./svg/circleplus.svg"
 import Delete from "./svg/delete.svg"
 import Music from "./svg/music.svg"
 
-
-
-
-
-
 export const Svg = {
     Music,
     Delete,

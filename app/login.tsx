@@ -4,8 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Svg } from '@/assets';
 import Button from '@/component/utilities/Button';
 import { useRouter } from 'expo-router';
-import { useSpotifyAuth } from '@/hooks/useSportifyAuth'; // ✅ import custom hook
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSpotifyAuth } from '@/hooks/useSportifyAuth';
 
 const Login = () => {
   const router = useRouter();
@@ -22,11 +21,8 @@ const Login = () => {
         <Button type="green" onPress={() => router.push('/emailLogin')}>
           Continue with email
         </Button>
-        <Button type="outline" onPress={() => router.push('/phoneNo')}>
-          Continue with phone number
-        </Button>
         <Button
-          icon={<Svg.Google width={15} height={15} />}
+          icon={<Svg.Google width={20} height={20} />}
           type="outline"
           onPress={() => router.push('/login')}
         >

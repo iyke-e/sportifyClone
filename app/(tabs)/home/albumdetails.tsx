@@ -3,12 +3,10 @@ import { useEffect, useState } from 'react';
 import {
     View,
     Text,
-    ScrollView,
     Image,
     StyleSheet,
     TouchableOpacity,
     ActivityIndicator,
-    ImageBackground,
 } from 'react-native';
 import { fetchAlbumById } from '@/lib/sportifyApi';
 import { LinearGradient } from 'expo-linear-gradient';

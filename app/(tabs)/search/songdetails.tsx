@@ -93,7 +93,6 @@ const SongDetail = () => {
 
                 </View>
 
-                {/* Song Metadata */}
                 <View style={styles.meta}>
                     <Text style={styles.metaText}>
                         {track.name} • {track.artists[0]?.name}
@@ -103,7 +102,6 @@ const SongDetail = () => {
                     </Text>
                 </View>
 
-                {/* Artist Info */}
                 <View style={styles.artistSection}>
                     <Image
                         source={{ uri: track.album.images[0].url }}
@@ -113,7 +111,6 @@ const SongDetail = () => {
                 </View>
 
             </LinearGradient>
-            {/* Back Button */}
 
         </Body>
     );
