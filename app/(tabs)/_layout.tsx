@@ -1,45 +1,61 @@
+import { Svg } from '@/assets';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+export default function TabsLayout() {
+    return (
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: { backgroundColor: '#0000004D', paddingTop: 10, borderColor: "transparent" },
+                tabBarActiveTintColor: '#fff',
+                tabBarInactiveTintColor: '#fff',
+            }}
+        >
+            <Tabs.Screen
+                name="home"
+                options={{
+                    tabBarLabel: "Home",
+                    tabBarIcon: ({ focused }) =>
+                        focused
+                            ? <Svg.HomeFilled width={24} height={24} />
+                            : <Svg.Home width={24} height={24} />
+                }}
+            />
+            <Tabs.Screen
+                name="search"
+                options={{
+                    tabBarLabel: "Search",
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+                    tabBarIcon: ({ focused }) =>
+                        focused
+                            ? <Svg.SearchFilled width={24} height={24} />
+                            : <Svg.Search width={24} height={24} />
+                }}
+            />
+            <Tabs.Screen
+                name="library"
+                options={{
+                    tabBarLabel: "Library",
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+                    tabBarIcon: ({ focused }) =>
+                        focused
+                            ? <Svg.LibraryFilled width={24} height={24} />
+                            : <Svg.Library width={24} height={24} />
+                }}
+            />
+            <Tabs.Screen
+                name="create"
+                options={{
+                    tabBarLabel: "Create",
+
+                    tabBarIcon: ({ focused }) =>
+                        <Svg.Plus
+                            width={24}
+                            height={24}
+                        />
+                }}
+            />
+        </Tabs>
+    );
 }

@@ -1,29 +1,53 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+export default function RootLayoutWrapper() {
+  return (
+    <AuthProvider>
+      <RootLayout />
+    </AuthProvider>
+  );
+}
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+function RootLayout() {
+  const { isLoggedIn, isLoading } = useAuth();
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  if (isLoading) return <AuthLoadingScreen />;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack
+      key={isLoggedIn ? "auth" : "guest"}
+      screenOptions={{
+        headerShown: false,
+        animation: "fade",
+        contentStyle: { backgroundColor: "#000" },
+      }}
+    >
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="signup" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
+function AuthLoadingScreen() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#000",
+      }}
+    >
+      <ActivityIndicator size="large" color="#1DB954" />
+    </View>
   );
 }
