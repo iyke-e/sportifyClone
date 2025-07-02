@@ -111,74 +111,6 @@ export async function fetchUserPlaylists(): Promise<ListItemProps[]> {
   }
 }
 
-export async function fetchTopMixes(): Promise<ListItemProps[]> {
-  const mixTitles = [
-    "Your Mix 1",
-    "Your Mix 2",
-    "Your Mix 3",
-    "Your Mix 4",
-    "Your Mix 5",
-    "Your Mix 6",
-  ];
-
-  try {
-    const token = await AsyncStorage.getItem('spotify_access_token');
-    if (!token) throw new Error('No token found in storage');
-
-    const results = await Promise.all(
-      mixTitles.map(async (title) => {
-        const res = await fetch(
-          `https://api.spotify.com/v1/search?q=${encodeURIComponent(title)}&type=playlist&limit=1`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const data = await res.json();
-        const playlist = data.playlists?.items?.[0];
-        if (!playlist) return null;
-
-        return {
-          id: playlist.id,
-          title: playlist.name,
-          url: playlist.images?.[0]?.url || '',
-          subtitle: 'Top Mix',
-          type: 'playlist',
-        };
-      })
-    );
-
-    return results.filter(Boolean) as ListItemProps[];
-  } catch (error) {
-    console.error('Error fetching top mixes:', error);
-    return [];
-  }
-}
-
-export async function fetchTrendingNow(): Promise<ListItemProps[]> {
-  try {
-    const token = await AsyncStorage.getItem('spotify_access_token');
-    if (!token) throw new Error('No token found in storage');
-
-    const res = await fetch('https://api.spotify.com/v1/browse/featured-playlists?limit=10', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (!data.playlists || !Array.isArray(data.playlists.items)) {
-      throw new Error('Unexpected response format: playlists not found');
-    }
-
-    return data.playlists.items.map((item: any) => ({
-      id: item.id,
-      title: item.name,
-      url: item.images?.[0]?.url || '',
-      subtitle: 'Featured',
-      type: 'playlist',
-    }));
-  } catch (error) {
-    console.error('Error fetching trending now:', error);
-    return [];
-  }
-}
 
 export async function fetchUserAlbums(): Promise<ListItemProps[]> {
   try {
@@ -543,30 +475,75 @@ export async function getCurrentUserProfile() {
 }
 
 
-export async function createPlaylistForUser(name: string) {
+export async function createPlaylistForUser(name: string): Promise<{ id: string }> {
+    const token = await AsyncStorage.getItem('spotify_access_token');
+    if (!token) throw new Error('No token available');
+
+    const userRes = await fetch('https://api.spotify.com/v1/me', {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    const userData = await userRes.json();
+    const userId = userData.id;
+
+    const playlistRes = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name,
+            public: false,
+        }),
+    });
+
+    const playlistData = await playlistRes.json();
+    return { id: playlistData.id };
+}
+
+
+export async function addTrackToPlaylist(playlistId: string, trackId: string): Promise<void> {
+  try {
+    const token = await AsyncStorage.getItem('spotify_access_token');
+    if (!token) throw new Error('No access token available');
+
+    const trackUri = `spotify:track:${trackId}`;
+    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ uris: [trackUri] }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('[addTrackToPlaylist] Error:', errorText);
+      throw new Error(`Failed to add track: ${errorText}`);
+    }
+
+    console.log(`[addTrackToPlaylist] Track ${trackId} added to playlist ${playlistId}`);
+  } catch (error) {
+    console.error('[addTrackToPlaylist] Exception:', error);
+    throw error;
+  }
+}
+
+export async function removeTrackFromPlaylist(playlistId: string, trackUri: string): Promise<void> {
   const token = await AsyncStorage.getItem('spotify_access_token');
-  if (!token) throw new Error('No access token available');
+  if (!token) throw new Error('No token found');
 
-  const user = await getCurrentUserProfile();
-
-  const res = await fetch(`https://api.spotify.com/v1/users/${user.id}/playlists`, {
-    method: 'POST',
+  await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+    method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      name,
-      public: false,
-      description: 'Created from mobile app',
+      tracks: [{ uri: `spotify:track:${trackUri}` }],
     }),
   });
-
-  if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error);
-  }
-
-  return await res.json();
 }
-

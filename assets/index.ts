@@ -19,6 +19,11 @@ import Shuffle from "./svg/shuffle.svg"
 import PlayBlack from "./svg/playblack.svg"
 import Threedot from "./svg/three-dots-vertical-svgrepo-com.svg"
 import CircleDownload from "./svg/circledownload.svg"
+import Share from "./svg/share.svg"
+import AddUser from "./svg/adduser.svg"
+import CirclePlus from "./svg/circleplus.svg"
+import Delete from "./svg/delete.svg"
+import Music from "./svg/music.svg"
 
 
 
@@ -26,6 +31,11 @@ import CircleDownload from "./svg/circledownload.svg"
 
 
 export const Svg = {
+    Music,
+    Delete,
+    CirclePlus,
+    AddUser,
+    Share,
     CircleDownload,
     PlayBlack,
     Threedot,

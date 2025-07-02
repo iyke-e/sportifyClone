@@ -10,7 +10,6 @@ import {
 import { useRouter } from 'expo-router';
 import { createPlaylistForUser } from '@/lib/sportifyApi'; // You’ll define this
 import Button from '@/component/utilities/Button';
-import Body from '@/component/layout/Body';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -25,12 +24,16 @@ const CreatePlaylistScreen = () => {
         }
 
         try {
-            await createPlaylistForUser(name.trim());
-            router.back();
+            const playlist = await createPlaylistForUser(name.trim()); // should return { id, ... }
+            router.replace({
+                pathname: '/(tabs)/library/playlistcreated',
+                params: { playlistId: playlist.id },
+            });
         } catch (error) {
-            Alert.alert('Failed to create playlist', error);
+            Alert.alert('Failed to create playlist');
         }
     };
+
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -41,9 +44,10 @@ const CreatePlaylistScreen = () => {
 
                 <View style={{
                     justifyContent: "center",
-                    flex: 1
+                    flex: 1,
+                    marginTop: 100,
                 }}>
-                    <Text style={styles.title}>Give your playlist a name</Text>
+                    <Text style={styles.title}>Give your Playlist a name</Text>
 
                     <TextInput
                         placeholder="Enter playlist name"
@@ -54,8 +58,8 @@ const CreatePlaylistScreen = () => {
                     />
 
                     <View style={styles.buttonRow}>
-                        <Button type='outline' onPress={() => router.back()}>Cancel</Button>
-                        <Button type='green' onPress={() => handleCreate()}>Create</Button>
+                        <Button style={{ width: "45%" }} type='outline' onPress={() => router.back()}>Cancel</Button>
+                        <Button style={{ width: "45%" }} type='green' onPress={() => handleCreate()}>Create</Button>
 
                     </View>
                 </View>
@@ -90,7 +94,11 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     buttonRow: {
-        flexDirection: "row"
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10
     },
     cancelButton: {
         padding: 12,

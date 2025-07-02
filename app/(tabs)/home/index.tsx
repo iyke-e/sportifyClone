@@ -3,20 +3,15 @@ import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NavBtn from '@/component/homeScreen/NavBtn';
 import Section from '@/component/homeScreen/Section';
-import { fetchMadeForYou, fetchPlaylistsBySearchTerm, fetchRecentlyPlayed, fetchTopMixes, fetchTrendingNow, fetchUserPlaylists } from '@/lib/sportifyApi';
-import { useRouter } from 'expo-router';
+import { fetchRecentlyPlayed, fetchUserPlaylists } from '@/lib/sportifyApi';
 import { useAuth } from '@/context/AuthContext';
 import PlaylistSection from '@/component/homeScreen/PlaylistSection';
 
 const Home = () => {
     const { logout } = useAuth();
-    const router = useRouter();
 
     const handleLogout = async () => {
         await logout();
-
-
-
     };
 
 

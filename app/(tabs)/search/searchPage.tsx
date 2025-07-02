@@ -70,25 +70,25 @@ export default function SearchPage() {
         switch (item.type) {
             case 'track':
                 router.push({
-                    pathname: '/(tabs)/library/songdetails',
+                    pathname: '/(tabs)/search/songdetails',
                     params: { trackId: item.id },
                 });
                 break;
             case 'album':
                 router.push({
-                    pathname: '/(tabs)/library/albumdetails',
+                    pathname: '/(tabs)/search/albumdetails',
                     params: { albumId: item.id },
                 });
                 break;
             case 'artist':
                 router.push({
-                    pathname: '/(tabs)/library/artistdetails',
+                    pathname: '/(tabs)/search/artistdetails',
                     params: { artistId: item.id },
                 });
                 break;
             case 'playlist':
                 router.push({
-                    pathname: '/(tabs)/library/playlistdetails',
+                    pathname: '/(tabs)/search/playlistdetails',
                     params: { playlistId: item.id },
                 });
                 break;
