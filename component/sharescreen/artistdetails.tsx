@@ -123,7 +123,7 @@ const ArtistDetails = () => {
 
                 </View>
 
-                <View style={styles.section}>
+                <View style={[styles.section, styles.sectionEnd]}>
                     <Text style={styles.sectionTitle}>Albums</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {albums.map(album => (
@@ -220,6 +220,9 @@ const styles = StyleSheet.create({
     section: {
         marginTop: 10,
         marginHorizontal: 16,
+    },
+    sectionEnd: {
+        marginBottom: 80,
     },
     sectionTitle: {
         color: '#fff',
