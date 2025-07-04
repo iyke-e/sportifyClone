@@ -474,3 +474,14 @@ export async function removeTrackFromPlaylist(playlistId: string, trackUri: stri
   }
 }
 
+export async function deleteUserPlaylist(playlistId: string): Promise<void> {
+  try {
+    await fetchWithAuth(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+      method: 'DELETE',
+    });
+    console.log(`Playlist ${playlistId} successfully deleted (unfollowed).`);
+  } catch (error) {
+    console.error(`Error deleting (unfollowing) playlist ${playlistId}:`, error);
+    throw error;
+  }
+}
