@@ -24,10 +24,18 @@ import AddUser from "./svg/adduser.svg"
 import CirclePlus from "./svg/circleplus.svg"
 import Delete from "./svg/delete.svg"
 import Music from "./svg/music.svg"
+import CircleMinus from "./svg/circleminus.svg"
+import Pause from "./svg/pause.svg"
+import Play from "./svg/play.svg"
+import Stop from "./svg/stop.svg"
 
 export const Svg = {
+    Stop,
+    Play,
+    Pause,
     Music,
     Delete,
+    CircleMinus,
     CirclePlus,
     AddUser,
     Share,

@@ -51,7 +51,7 @@ const PlaylistSection = ({ title, searchTerm }: PlaylistSectionProps) => {
                             key={playlist.id}
                             onPress={() =>
                                 router.push({
-                                    pathname: '/(tabs)/home/playlistdetails',
+                                    pathname: '/drawer/(tabs)/home/playlistdetails',
                                     params: { playlistId: playlist.id },
                                 })
                             }
@@ -83,12 +83,12 @@ const styles = StyleSheet.create({
         marginLeft: 16,
     },
     card: {
-        width: 160,
+        width: 120,
         marginRight: 16,
     },
     image: {
-        width: 160,
-        height: 160,
+        width: 120,
+        height: 120,
         borderRadius: 8,
         marginBottom: 6,
     },

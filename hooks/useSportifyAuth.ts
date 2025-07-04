@@ -1,4 +1,3 @@
-// hooks/useSpotifyAuth.ts
 import { ResponseType, useAuthRequest, makeRedirectUri } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
@@ -27,7 +26,7 @@ const SCOPES = [
   'playlist-modify-private',
   'user-follow-read',
   'user-follow-modify',
-  'user-read-playback-position'
+  'user-read-playback-position',
 ];
 
 const REDIRECT_URI = makeRedirectUri({
@@ -77,19 +76,24 @@ export const useSpotifyAuth = () => {
     });
 
     try {
-      const res = await fetch('https://accounts.spotify.com/api/token', {
+      const res = await fetch(discovery.tokenEndpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString(),
       });
 
       const data = await res.json();
 
       if (data.access_token) {
-        await AsyncStorage.setItem('spotify_access_token', data.access_token);
-        setLoggedIn(true); // triggers layout rerender and auth redirect
+        const expiresAt = Date.now() + data.expires_in * 1000;
+
+        await AsyncStorage.multiSet([
+          ['spotify_access_token', data.access_token],
+          ['spotify_expires_at', expiresAt.toString()],
+          ['spotify_refresh_token', data.refresh_token ?? ''],
+        ]);
+
+        setLoggedIn(true);
       } else {
         console.error('Failed to exchange token:', data);
       }

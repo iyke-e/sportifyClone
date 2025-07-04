@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isTokenValid } from '@/lib/tokenUtils';
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -15,21 +16,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        (async () => {
-            const token = await AsyncStorage.getItem('spotify_access_token');
-            setIsLoggedIn(!!token);
+        const checkToken = async () => {
+            const valid = await isTokenValid();
+            setIsLoggedIn(valid);
             setIsLoading(false);
-        })();
+        };
+
+        checkToken();
     }, []);
 
     const logout = async () => {
-        await AsyncStorage.removeItem('spotify_access_token');
+        await AsyncStorage.multiRemove([
+            'spotify_access_token',
+            'spotify_expires_at',
+            'spotify_refresh_token',
+        ]);
         setIsLoggedIn(false);
         console.log('Logged out');
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, isLoading, logout, setLoggedIn: setIsLoggedIn }}>
+        <AuthContext.Provider
+            value={{ isLoggedIn, isLoading, logout, setLoggedIn: setIsLoggedIn }}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -37,6 +46,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) throw new Error("useAuth must be used within AuthProvider");
+    if (!context) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
     return context;
 };

@@ -1,11 +1,14 @@
 import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { AudioPlayerProvider } from "@/context/AudioPlayerContext";
 
 export default function RootLayoutWrapper() {
   return (
     <AuthProvider>
-      <RootLayout />
+      <AudioPlayerProvider>
+        <RootLayout />
+      </AudioPlayerProvider>
     </AuthProvider>
   );
 }
@@ -25,7 +28,7 @@ function RootLayout() {
       }}
     >
       <Stack.Protected guard={isLoggedIn}>
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="drawer" />
       </Stack.Protected>
 
       <Stack.Protected guard={!isLoggedIn}>
