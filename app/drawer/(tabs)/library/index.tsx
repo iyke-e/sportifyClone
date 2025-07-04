@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
     Image,
+    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -13,6 +14,7 @@ import {
     fetchFollowedArtists,
     fetchUserAlbums,
     fetchUserPlaylists,
+    deleteUserPlaylist,
 } from '@/lib/sportifyApi';
 import { useRouter } from 'expo-router';
 import AvatarDrawerTrigger from '@/component/utilities/avatarDrawer';
@@ -21,6 +23,8 @@ const Library = () => {
     const [libraryItems, setLibraryItems] = useState<any[]>([]);
     const [filteredItems, setFilteredItems] = useState<any[]>([]);
     const [activeFilter, setActiveFilter] = useState<string>('all');
+    const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null);
+    const [showModal, setShowModal] = useState(false);
 
     const router = useRouter();
 
@@ -84,12 +88,9 @@ const Library = () => {
                 <View style={styles.headerIcons}>
                     <View>
                         <Svg.Search width={20} height={20} />
-
-
                     </View>
                     <View>
                         <Svg.Plus width={20} height={20} />
-
                     </View>
                 </View>
             </View>
@@ -120,19 +121,79 @@ const Library = () => {
 
             <ScrollView>
                 {filteredItems.map((item) => (
-                    <TouchableOpacity
-                        key={item.id}
-                        onPress={() => handleNavigation(item)}
-                        style={styles.listItem}
-                    >
-                        <Image source={{ uri: item.url }} style={styles.itemImage} />
-                        <View style={styles.itemText}>
-                            <Text ellipsizeMode='tail' numberOfLines={2} style={styles.itemTitle}>{item.title}</Text>
-                            <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View key={item.id} style={styles.listItem}>
+                        <TouchableOpacity
+                            onPress={() => handleNavigation(item)}
+                            style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}
+                        >
+                            <Image source={{ uri: item.url }} style={styles.itemImage} />
+                            <View style={styles.itemText}>
+                                <Text ellipsizeMode="tail" numberOfLines={2} style={styles.itemTitle}>
+                                    {item.title}
+                                </Text>
+                                <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        {item.type === 'playlist' && (
+                            <TouchableOpacity hitSlop={40} onPress={() => {
+                                setSelectedPlaylist(item);
+                                setShowModal(true);
+                            }}>
+                                <Svg.Delete width={18} height={18} />
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 ))}
             </ScrollView>
+
+            <Modal
+                visible={showModal}
+                transparent
+                animationType="fade"
+                onRequestClose={() => {
+                    setShowModal(false);
+                    setSelectedPlaylist(null);
+                }}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>
+                            Delete playlist "{selectedPlaylist?.title}"?
+                        </Text>
+
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    if (!selectedPlaylist) return;
+                                    await deleteUserPlaylist(selectedPlaylist.id);
+                                    setLibraryItems(prev =>
+                                        prev.filter(p => p.id !== selectedPlaylist.id)
+                                    );
+                                    setFilteredItems(prev =>
+                                        prev.filter(p => p.id !== selectedPlaylist.id)
+                                    );
+                                    setShowModal(false);
+                                    setSelectedPlaylist(null);
+                                }}
+                                style={styles.deleteBtn}
+                            >
+                                <Text style={{ color: '#fff' }}>Yes, Delete</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setShowModal(false);
+                                    setSelectedPlaylist(null);
+                                }}
+                                style={styles.cancelBtn}
+                            >
+                                <Text style={{ color: '#fff' }}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </Body>
     );
 };
@@ -174,10 +235,52 @@ const styles = StyleSheet.create({
     listItem: {
         flexDirection: 'row',
         alignItems: 'center',
+        gap: 30,
         marginBottom: 18,
+        justifyContent: 'space-between',
     },
     itemImage: { width: 52, height: 52, borderRadius: 4, marginRight: 12 },
     itemText: { flex: 1 },
     itemTitle: { color: 'white', fontSize: 15 },
     itemSubtitle: { color: '#aaa', fontSize: 13, marginTop: 2 },
+
+    // Modal styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#222',
+        padding: 20,
+        borderRadius: 10,
+        width: 300,
+        alignItems: 'center',
+    },
+    modalText: {
+        color: '#fff',
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 16,
+    },
+    deleteBtn: {
+        backgroundColor: '#d33',
+        padding: 10,
+        borderRadius: 6,
+        flex: 1,
+        alignItems: 'center',
+    },
+    cancelBtn: {
+        backgroundColor: '#555',
+        padding: 10,
+        borderRadius: 6,
+        flex: 1,
+        alignItems: 'center',
+    },
 });
